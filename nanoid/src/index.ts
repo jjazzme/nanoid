@@ -1,56 +1,41 @@
-import http from "http";
+import http from 'http';
 import { fileURLToPath } from 'url';
-import fs from "fs";
-import path from "path";
-import { nanoid } from 'nanoid'
+import path from 'path';
 
-import {IncomingMessage, ServerResponse} from "http";
-
-const host: string = '0.0.0.0';
-const port: number = 3000;
+import { IncomingMessage, ServerResponse } from 'http';
+import { Counter } from './counter.js';
+import { env } from './env.js';
+import { ResponseProcessor } from './responseProcessor.js';
+import { RequestProcessor } from './RequestProcessor.js';
+import { Generator } from './generator.js';
 
 const currentModuleFile = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentModuleFile);
-const index = fs.readFileSync(path.join(currentDir, 'index.html'), 'utf8');
-let counter = parseInt(fs.readFileSync(path.join(currentDir, 'p', 'counter.html'), 'utf8'));
 
-const writer = () => {
-    setTimeout(()=>{
-        try {
-            const saved = parseInt(fs.readFileSync(path.join(currentDir, 'p', 'counter.html'), 'utf8'));
-            if (counter < saved) counter = saved;
-            if (counter !== saved) {
-                fs.writeFileSync(path.join(currentDir, 'p', 'counter.html'), counter.toString(), 'utf8')
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            writer();
-        }
-    }, 1000);
-}
-writer();
+const counter = new Counter(
+  path.join(currentDir, 'p', 'counter.html'),
+  env.counterWriterInterval,
+);
+const responseProcessor = new ResponseProcessor(
+  path.join(currentDir, 'pages'),
+  counter,
+);
+const generator = new Generator(env.alphabet);
 
-const requestListener = function (req: IncomingMessage, res: ServerResponse) {
-    if (req.method === 'GET') {
-        if (['/', '/simple'].includes(req.url ?? '') ) {
-            const browser = req.headers['user-agent'];
-            const simple = req.url === '/simple' || browser === '' || browser == undefined || browser.toLowerCase().indexOf('curl') === 0 || browser.toLowerCase().indexOf('wget') === 0 || browser.toLowerCase().indexOf('axios') === 0;
-            const nanoID = nanoid();
-            counter++;
-            res.end(simple ? nanoID : index.replace('{nanoID}', nanoID).replace('{counter}', counter.toString()))
-        } else {
-            res.end();
-        }
-    } else {
-        res.end();
-    }
+const requestListener = (req: IncomingMessage, res: ServerResponse) => {
+  try {
+    const request = new RequestProcessor(req);
+    responseProcessor.reply(request, res, generator);
+  } catch (e) {
+    console.error(e);
+    res.statusCode = 500;
+    res.end(e);
+  }
 };
 
-
-
-
 const server = http.createServer(requestListener);
-server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
+server.listen(env.server.port, env.server.host, () => {
+  console.log(
+    `Server is running on http://${env.server.host}:${env.server.port}`,
+  );
 });

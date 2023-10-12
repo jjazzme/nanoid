@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="Description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests">
+    <meta name="keywords" content="nanoid, nano id, nanoid generator, nanoid online, nanoid generator online, nano id generator, nano id online, nano id generator online">
+    <meta property="og:site_name" content="NANOID.DEV" />
+    <meta property="og:title" content="NANOID: Nano ID generator">
+    <meta property="og:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests">
+    <meta property="og:image" content="https://nanoid.dev/nanoid.jpg" />
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nanoid.dev/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests" />
+    <meta name="twitter:image" content="https://nanoid.dev/nanoid.jpg" />
+    <link rel="icon" type="image/svg+xml" href="p/icon.svg" />
+    <meta charset="UTF-8">
+    <title>NANOID: Nano ID generator</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
+    <script>
+        let active = false;
+        document.querySelector('script[src="https://unpkg.com/axios/dist/axios.min.js"]').addEventListener('load', function () {
+            active = true;
+            document.querySelector('#naco').classList.add('active');
+            setInterval(async ()=>{
+                try {
+                    const {data, status} = await axios.get('/counter');
+                    document.querySelector('#c_val').innerHTML = data;
+                } catch (e) {
+                    console.error(e);
+                }
+            }, {counterRequestInterval});
+        });
+        async function _click (nocopy = false, action) {
+
+            if (action === 'nc') document.querySelector('#nl').checked = false;
+            if (action === 'nl') document.querySelector('#nc').checked = false;
+            let options = 'n';
+            if (document.querySelector('#nd').checked === true) options += 'd';
+            if (document.querySelector('#ns').checked === true) options += 's';
+            if (document.querySelector('#nu').checked === true) options += 'u';
+            if (document.querySelector('#nl').checked === true) options += 'l';
+            if (document.querySelector('#nc').checked === true) options += 'c';
+            let size = parseInt(document.querySelector('#sz').value);
+            if (isNaN(size)) size = 21;
+            if (size !== 21) {
+                options += 'S' + size.toString();
+            }
+            if (options === 'n') options = '';
+
+            const currentDate = new Date();
+            currentDate.setFullYear(currentDate.getFullYear() + 1);
+            const expires = currentDate.toUTCString();
+            document.cookie = `options=${options}; expires=${expires}; path=/; domain=nanoid.dev`;
+
+            const nidElement = document.querySelector('#nanoid');
+            if (!nocopy) {
+                try {
+                    await copyToClipboard(nidElement.innerHTML);
+                    document.querySelector('#clipboard span').innerHTML = nidElement.innerHTML;
+                    nidElement.classList.add('success');
+                    document.querySelector('#clipboard').style.opacity = '0.5';
+                } catch (e) {
+                    console.error(e);
+                    nidElement.classList.add('failed');
+                }
+            }
+            try {
+                const {headers, status } = await axios.head(`/${options}`);
+                nidElement.innerHTML = headers['nanoid'];
+                document.querySelector('#c_val').innerHTML = (parseInt(document.querySelector('#c_val').innerHTML) + 1).toString();
+            } catch (e) {
+                console.error(e);
+                document.querySelector('header h1').classList.add('failed');
+            }
+            setTimeout(()=>{
+                nidElement.classList.remove('success');
+                nidElement.classList.remove('failed');
+                document.querySelector('header h1').classList.remove('failed');
+            }, 200);
+        }
+        async function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(text)
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        }
+    </script>
+    <style>
+        html {
+            word-wrap: break-word;
+            font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            font-weight: 400;
+            padding: 0;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-text-size-adjust: 100%;
+            color-scheme: light dark;
+
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+
+            --background-light: #ffffff;
+            --background-dark: #000000;
+            --nc-background-light: #ffffff99;
+            --nc-background-dark: #00000099;
+        }
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-light);
+            padding: 0;
+            margin: 0;
+        }
+
+        header {
+            z-index: -1;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        h1 {
+            font-size: 15vw;
+            font-weight: 900;
+            opacity: 0.10;
+            line-height: min(20vw, 33vh);
+            transition-duration: 100ms;
+            margin: 0;
+        }
+        h1.failed {
+            color: red;
+        }
+        main {
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            flex-flow: column;
+        }
+
+        #naco {
+            font-size: max(3vw, 18px);
+            line-height: max(4vw, 30px);
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            margin-bottom: 50px;
+            border: 1px solid #99999966;
+            padding: 20px;
+            border-radius: 10px;
+            background: var(--nc-background-light);
+        }
+        #naco.active {
+            cursor: pointer;
+        }
+        #naco.active:hover, #naco.active:active {
+            background-color: #99999911;
+        }
+        #nanoid {
+            min-width: max(55vw, 300px);
+            transition-duration: 100ms;
+        }
+        #nanoid.success {
+            color: green;
+        }
+        #nanoid.failed {
+            color: red;
+        }
+
+        #copy {
+            margin-left: 30px;
+            opacity: 0;
+        }
+        #naco.active #copy {
+            opacity: 0.5;
+        }
+
+        #options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100vw;
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+        }
+        footer div {
+            flex: 1 1 auto;
+            padding: 5px;
+            min-width: calc(50% - 15px);
+        }
+        #clipboard {
+            opacity: 0;
+            text-align: center;
+            font-weight: 900;
+            margin-top: 30px;
+        }
+        #counter {
+            text-align: center;
+        }
+        #counter span {
+            opacity: 0.33;
+            font-weight: normal;
+        }
+        #counter span#c_val {
+            font-weight: 700;
+            opacity: 0.75;
+        }
+        #copyright {
+            text-align: right;
+            opacity: 0.5;
+        }
+
+        #help {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            width: 40px;
+            height: 60px;
+            display: block;
+            text-align: center;
+            opacity: 0.75;
+        }
+        #help:hover {
+            opacity: 1;
+        }
+        #help svg {
+            width: 40px;
+        }
+
+        a, a:visited {
+            color: #999;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        a:hover {
+            color: #000;
+        }
+
+        @media (max-width: 480px) {
+            #options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body{
+                background-color: var(--background-dark);
+            }
+            #naco{
+                background-color: var(--nc-background-dark);
+            }
+            a:hover {
+                color: #fff;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<header><h1>NANOID GENERATOR ONLINE</h1></header>
+<main>
+    <section id="naco" onclick="_click()">
+        <div id="nanoid">{nanoID}</div>
+        <svg id="copy" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="currentColor" d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
+    </section>
+    <div id="options">
+        <label>
+            <input type="checkbox" id="nd" onchange="_click(true)" {nd_checked}> no digits
+        </label>
+        <label>
+            <input type="checkbox" id="ns" onchange="_click(true)" {ns_checked}> no symbols
+        </label>
+        <label>
+            <input type="checkbox" id="nu" onchange="_click(true)" {nu_checked}> no unreadable
+        </label>
+        <label>
+            <input type="checkbox" id="nl" onchange="_click(true, 'nl')" {nl_checked}> no lower
+        </label>
+        <label>
+            <input type="checkbox" id="nc" onchange="_click(true, 'nc')" {nc_checked}> no capital
+        </label>
+        <label>
+            size: <input type='number' min="3" max="99" id="sz" value="{sz_value}" onchange="_click(true)">
+        </label>
+    </div>
+    <div id="clipboard">clipboard: <span></span></div>
+</main>
+<footer>
+    <div id="counter"><span>total gen: </span><span id="c_val">{counter}</span><span>ids</span></div>
+    <div id="copyright">jjazz.me, 2023 &nbsp;</div>
+</footer>
+<a id="help" href="/help">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <style>
+            .i-icon { fill: #333; }
+            @media (prefers-color-scheme: dark) {.i-icon { fill:#ccc; }}
+        </style>
+        <path class="i-icon" d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-144c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32z"/>
+
+    </svg>
+    help
+</a>
+</body>
+</html>

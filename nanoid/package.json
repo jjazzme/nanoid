@@ -1,24 +1,36 @@
 {
-  "name": "nanoid",
+  "name": "nanoid http generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests",
   "type": "module",
+  "engines": {
+    "node": "^18 || >=20"
+  },
   "scripts": {
     "dev": "nodemon --watch './**/*.*' --ignore 'src/p/counter.html' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' ./src/index.ts",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "Eugene Mironiouk <@jjazzme> (https://jjazz.me)",
-  "license": "proprietary",
-  "private": "true",
+  "author": "Eugene Mironiouk <me@jjazz.me>",
+  "license": "MIT",
   "homepage": "https://jjazz.me",
+  "repository": "jjazzme/nanoid",
   "dependencies": {
     "nanoid": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
     "@types/node": "^20.8.3",
     "@types/nodemon": "^1.19.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }

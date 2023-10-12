@@ -2,3 +2,4 @@
 /c1/node/nanoid/
 node_modules
 package-lock.json
+/c1/node/tsconfig.tsbuildinfo

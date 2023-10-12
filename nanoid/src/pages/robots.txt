@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /
+Allow: /$
+Allow: /help$
+Host: https://nanoid.dev
+
+Sitemap: https://nanoid.dev/sitemap.xml
