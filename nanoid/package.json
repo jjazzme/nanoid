@@ -1,6 +1,6 @@
 {
   "name": "nanoid http generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests",
   "type": "module",
   "engines": {
