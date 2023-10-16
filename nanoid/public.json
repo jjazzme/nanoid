@@ -1,0 +1,16 @@
+{
+  "name": "nanoid http generator",
+  "version": "1.0.0",
+  "description": "Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests",
+  "type": "module",
+  "engines": {
+    "node": "^18 || >=20"
+  },
+  "author": "Eugene Mironiouk <me@jjazz.me>",
+  "license": "MIT",
+  "homepage": "https://jjazz.me",
+  "repository": "jjazzme/nanoid",
+  "dependencies": {
+    "nanoid": "^5.0.1"
+  }
+}

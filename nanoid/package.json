@@ -1,6 +1,6 @@
 {
   "name": "nanoid http generator",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests",
   "type": "module",
   "engines": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon --watch './**/*.*' --ignore 'src/p/counter.html' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' ./src/index.ts",
-    "build": "tsc",
+    "build": "./build.sh",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.ts\"",

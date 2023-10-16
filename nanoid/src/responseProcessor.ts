@@ -60,6 +60,7 @@ export class ResponseProcessor {
       res.end(this.routes.no);
       return;
     }
+
     if (request.route === 'counter') {
       res.end(this.counter.value.toString());
       return;
@@ -86,8 +87,28 @@ export class ResponseProcessor {
       if (request.responseType === 'head') {
         res.end();
       } else if (request.responseType === 'html') {
+        const option_html = '<option value="{value}">{value}</option>';
+        const option_html_selected =
+          '<option value="{value}" selected>{value}</option>';
+        let options = '';
+        const size = request.options?.size ?? 21;
+        for (let i = 3; i < 100; i++) {
+          options += (
+            i === size ? option_html_selected : option_html
+          ).replaceAll('{value}', i.toString());
+        }
+        const spanChain = nanoID
+          .split('')
+          .map((i) => `<span>${i}</span>`)
+          .join('');
+        const markers = nanoID
+          .split('')
+          .map((i, n) => `<span>${n + 1}</span>`)
+          .join('');
         const index = this.routes.index
+          .replace('{spanChain}', spanChain)
           .replace('{nanoID}', nanoID)
+          .replace('{markers}', markers)
           .replace('{counter}', (this.counter.value + 1).toString())
           .replace(
             '{counterRequestInterval}',
@@ -106,7 +127,8 @@ export class ResponseProcessor {
               ? 'checked'
               : '',
           )
-          .replace('{sz_value}', (request.options?.size ?? 21).toString());
+          .replace('{sz_value}', size.toString())
+          .replace('sz_options', options);
         res.end(index);
       } else {
         // text

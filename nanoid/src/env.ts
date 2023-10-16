@@ -8,10 +8,10 @@ const symbols = '_-';
 
 const routes: Omit<TRoutes, 'no'> = {
   counter: /^\/c/g,
-  index: /^\/n?[dsulc]*(S\d\d?)?$/g,
   help: /^\/h/g,
   sitemap: /^\/sitemap.xml/g,
   robots: /^\/robots.txt/g,
+  index: /^\/(?:n[dsulc]*)?(S\d\d?)?[?#]?(?:[?#].+)?$/g, // !! index is last node
 };
 
 export const env = {
@@ -32,4 +32,5 @@ export const env = {
   counterWriterInterval: 1000,
   routes,
   defaultOptionsSource: '/nS21',
+  rootPathWithOptions: /^\/n[dsulc]*(S\d\d?)?/g,
 };

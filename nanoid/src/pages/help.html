@@ -16,7 +16,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests. Help section" />
     <meta name="twitter:image" content="https://nanoid.dev/p/nanoid.jpg" />
-    <link rel="icon" type="image/svg+xml" href="p/icon.svg" />
+    <link rel="icon" type="image/svg+xml" href="p/nano.svg" />
     <meta charset="UTF-8">
     <title>HELP: Nano ID generator</title>
     <style>
@@ -78,6 +78,16 @@
         }
         a:hover {
             color: #000;
+        }
+        #root {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            width: 40px;
+            height: 60px;
+            display: block;
+            text-align: center;
+            opacity: 0.75;
         }
         #root {
             position: fixed;
@@ -160,13 +170,7 @@
         </section>
     </main>
     <a id="root" href="/">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <style>
-                .i-icon { fill: #333; }
-                @media (prefers-color-scheme: dark) {.i-icon { fill:#ccc; }}
-            </style>
-            <path class="i-icon" d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-144c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32z"/>
-        </svg>
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><defs><style>.o{fill:#ccc}.c{fill:#222}@media(prefers-color-scheme:dark){.o{fill:#222}.c{fill:#ccc}}</style></defs><circle cx="250" cy="250" r="240" class="c"/><path class="n" d="m145.296 199.261-34.668-.024v-49.696h225.803c30.286 0 53.947 26.534 54.151 49.696V299.8c-.671 24.904-21.01 49.543-54.151 49.543h-94.327l.192-114.611h50.352l.041 65.068h22.617c13.874 0 21.125-8.173 21.125-18.673v-64.825c0-10.357-5.164-17.065-21.15-17.065h-115.01v150.106h-89.643V299.8h34.403l.265-100.539Z"/></svg>
         root
     </a>
 </body>

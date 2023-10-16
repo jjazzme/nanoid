@@ -46,7 +46,7 @@ export class RequestProcessor {
       const cRow = req.headers.cookie ?? '';
       const cArray = cRow.split(';');
       this.cookies = {};
-      for (const cookie in cArray) {
+      for (const cookie of cArray) {
         const [key, value] = cookie.trim().split('=');
         this.cookies[key] = decodeURIComponent(value);
       }
@@ -54,13 +54,11 @@ export class RequestProcessor {
       const cookiePath = `/${
         this.cookies ? this.cookies['options'] ?? '' : ''
       }`;
-      const source = this.path.match(env.routes.index)
+      const source = this.path.match(env.rootPathWithOptions)
         ? this.path
         : cookiePath.match(env.routes.index)
         ? cookiePath
         : env.defaultOptionsSource;
-
-      console.log(cRow, this.cookies, cookiePath, source);
 
       let size = 21;
       const _size = (env.routes.index.exec(source) ?? [])[1];
