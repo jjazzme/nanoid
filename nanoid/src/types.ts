@@ -21,9 +21,21 @@ export type TAlphabet = {
 
 export type TEnv = typeof env;
 
-export type TRoute = 'index' | 'help' | 'no' | 'counter' | 'sitemap' | 'robots';
+export type TRouteId =
+  | 'index'
+  | 'help'
+  | 'no'
+  | 'counter'
+  | 'sitemap'
+  | 'robots';
 
-export type TRoutes = Record<TRoute, RegExp>;
+export type TRoute = {
+  reg?: RegExp;
+  processable?: true;
+  replaces?: Record<string, string>;
+};
+
+export type TRoutes = Record<TRouteId, TRoute>;
 
 export type TResponseType = 'text' | 'html' | 'head' | 'error';
 

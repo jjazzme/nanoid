@@ -1,27 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- main page parameters -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="Description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests">
+    <title>{{title}}</title>
+    <meta name="Description" content="{{description}}">
     <meta name="keywords" content="nanoid, nano id, nanoid generator, nanoid online, nanoid generator online, nano id generator, nano id online, nano id generator online">
+
+    <!--
+        for facebook preview
+    -->
     <meta property="og:site_name" content="NANOID.DEV" />
-    <meta property="og:title" content="NANOID: Nano ID generator">
-    <meta property="og:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests">
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:description" content="{{description}}">
     <meta property="og:image" content="https://nanoid.dev/p/nanoid.jpg" />
     <meta property="og:image:width" content="1200"/>
     <meta property="og:image:height" content="630"/>
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nanoid.dev/" />
+
+    <!--
+        for twitter preview
+    -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests" />
+    <meta name="twitter:description" content="{{description}}" />
     <meta name="twitter:image" content="https://nanoid.dev/p/nanoid.jpg" />
-    <link rel="icon" type="image/svg+xml" href="p/nano.svg" />
-    <meta charset="UTF-8">
-    <title>NANOID: Nano ID generator</title>
+
+    <!-- favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{icon}}" />
+
+    <!-- axios http client -->
     <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
+
     <script>
         let active = false;
+
+        //* axios initialization *//
         document.querySelector('script[src="https://unpkg.com/axios/dist/axios.min.js"]').addEventListener('load', function () {
             active = true;
             document.querySelector('#naco').classList.add('active');
@@ -32,12 +47,17 @@
                 } catch (e) {
                     console.error(e);
                 }
-            }, {counterRequestInterval});
+            }, {{counterRequestInterval}});
         });
-        async function _click (nocopy = false, action) {
 
+        //* new NanoID generation *//
+        async function makeNewId (nocopy = false, action) {
+
+            //* only nc or nl, not both *//
             if (action === 'nc') document.querySelector('#nl').checked = false;
             if (action === 'nl') document.querySelector('#nc').checked = false;
+
+            //* set options and size *//
             let options = 'n';
             if (document.querySelector('#nd').checked === true) options += 'd';
             if (document.querySelector('#ns').checked === true) options += 's';
@@ -51,6 +71,7 @@
             }
             if (options === 'n') options = '';
 
+            //* set cookies *//
             const currentDate = new Date();
             currentDate.setFullYear(currentDate.getFullYear() + 1);
             const expires = currentDate.toUTCString();
@@ -58,6 +79,7 @@
 
             const nidElement = document.querySelector('#nanoid');
             if (!nocopy) {
+                /* copy to clipboard */
                 try {
                     await copyToClipboard(nidElement.getAttribute('data-value'));
                     document.querySelector('#clipboard span').innerHTML = nidElement.getAttribute('data-value');
@@ -69,12 +91,16 @@
                 }
             }
             try {
-                const {headers, status } = await axios.head(`/${options}`);
+                //* get new NanoID from server *//
+                const {headers} = await axios.head(`/${options}`);
                 const nanoID = headers['nanoid'];
 
+                //* make chain of spans / markers for NanoID visualisation *//
                 const spanChain = nanoID.split('').map((i) => `<span>${i}</span>`).join('');
                 const markers = nanoID.split('').map((i, n) => `<span>${n + 1}</span>`).join('');
 
+
+                //* html implementations *//
                 nidElement.setAttribute('data-value', nanoID);
                 nidElement.innerHTML = spanChain;
                 document.querySelector('#markers').innerHTML = markers;
@@ -84,6 +110,8 @@
                 console.error(e);
                 document.querySelector('header h1').classList.add('failed');
             }
+
+            //* interactions *//
             setTimeout(()=>{
                 nidElement.classList.remove('success');
                 nidElement.classList.remove('failed');
@@ -98,6 +126,8 @@
                 }
             }, 200);
         }
+
+        //* copy to clipboard function *//
         async function copyToClipboard(text) {
             if (navigator.clipboard) {
                 await navigator.clipboard.writeText(text)
@@ -111,6 +141,7 @@
             }
         }
     </script>
+
     <style>
         html {
             word-wrap: break-word;
@@ -353,47 +384,72 @@
 </head>
 <body>
 <header><h1>NANOID GENERATOR ONLINE</h1></header>
+
+<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "name": "{{title}}",
+        "url": "https://nanoid.dev",
+        "description": "{{description}}",
+        "author": {
+            "@type": "Person",
+            "name": "@jjazzme"
+        },
+        "image": "http://nanoid.dev/p/nanoid.jpg",
+        "license": "http://creativecommons.org/licenses/by-nc/4.0/"
+    }
+</script>
+
 <main>
-    <section id="naco" onclick="_click()" title="Copy to clipboard">
+    <section id="naco" onclick="makeNewId()" title="Copy to clipboard">
+        <!-- Nanoid visualisation panel -->
         <div id="nanoid-over">
             <div id="nanoid-holder">
-                <div id="nanoid" data-value="{nanoID}">{spanChain}</div>
-                <div id="markers">{markers}</div>
+                <div id="nanoid" data-value="{{nanoID}}">{{spanChain}}</div>
+                <div id="markers">{{markers}}</div>
             </div>
         </div>
         <svg id="copy" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="currentColor" d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
     </section>
+
     <div id="options">
         <label>
-            <input type="checkbox" id="nd" onchange="_click(true)" {nd_checked}>
+            <input type="checkbox" id="nd" onchange="makeNewId(true)" {{nd_checked}}>
             &nbsp;no digits
         </label>
         <label>
-            <input type="checkbox" id="ns" onchange="_click(true)" {ns_checked}>
+            <input type="checkbox" id="ns" onchange="makeNewId(true)" {{ns_checked}}>
             &nbsp;no symbols
         </label>
         <label>
-            <input type="checkbox" id="nu" onchange="_click(true)" {nu_checked}> no &nbsp;unreadable
+            <input type="checkbox" id="nu" onchange="makeNewId(true)" {{nu_checked}}> no &nbsp;unreadable
         </label>
         <label>
-            <input type="checkbox" id="nl" onchange="_click(true, 'nl')" {nl_checked}> no &nbsp;lower
+            <input type="checkbox" id="nl" onchange="makeNewId(true, 'nl')" {{nl_checked}}> no &nbsp;lower
         </label>
         <label>
-            <input type="checkbox" id="nc" onchange="_click(true, 'nc')" {nc_checked}> no &nbsp;capital
+            <input type="checkbox" id="nc" onchange="makeNewId(true, 'nc')" {{nc_checked}}> no &nbsp;capital
         </label>
         <label>
             size:&nbsp;
-            <select id="sz" value="{sz_value}" onchange="_click(true)">
-                {sz_options}
+            <select id="sz" value="{{sz_value}}" onchange="makeNewId(true)">
+                {{sz_options}}
             </select>
         </label>
     </div>
+
+    <!-- previous NanoID -->
     <div id="clipboard">clipboard: <span></span></div>
+
 </main>
+
 <footer>
-    <div id="counter"><span>total gen: </span><span id="c_val">{counter}</span><span>ids</span></div>
+    <div id="counter"><span>total gen: </span><span id="c_val">{{counter}}</span><span>ids</span></div>
     <div id="copyright">jjazz.me, 2023 &nbsp;</div>
 </footer>
+
+<!-- navigation to help -->
 <a id="help" href="/help">
     <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><style>.o{fill:#ccc}.c{fill:#222}@media(prefers-color-scheme:dark){.o{fill:#222}.c{fill:#ccc}}</style><circle cx="250" cy="250" r="240" class="c"/><path class="o" d="M256 192c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32Z"/><path class="o" d="M216 336h24v-64h-24c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-80c-13.3 0-24-10.7-24-24s10.7-24 24-24Z"/>
     </svg>

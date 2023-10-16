@@ -8,15 +8,10 @@ import { ServerResponse } from 'http';
 import { Generator } from './generator.js';
 import { customAlphabet } from 'nanoid';
 import { env } from './env.js';
+import {TRouteId} from "./types";
 
 export class ResponseProcessor {
-  routes: {
-    index: string;
-    help: string;
-    no: string;
-    sitemap: string;
-    robots: string;
-  } & Record<string, string>;
+  routes: Record<TRouteId, string>;
   pagesPath: string;
   counter: Counter;
 
@@ -24,31 +19,47 @@ export class ResponseProcessor {
     this.counter = counter;
 
     // generate routes
-    this.routes = { index: '?', help: '?', no: '?', sitemap: '?', robots: '?' };
+    this.routes = {
+      index: '?',
+      help: '?',
+      no: '?',
+      sitemap: '?',
+      robots: '?',
+      counter: '?',
+    };
     this.pagesPath = pagesPath;
     const pagesFiles = fs.readdirSync(pagesPath);
     const names = pagesFiles.filter((file) =>
       ['.html', '.txt', '.xml'].includes(path.extname(file)),
     );
     for (const fileName of names) {
-      const name = fileName.substring(0, fileName.lastIndexOf('.'));
+      const name = fileName.substring(0, fileName.lastIndexOf('.')) as TRouteId;
       this.routes[name] = fs.readFileSync(`${pagesPath}/${fileName}`, 'utf8');
-      if (name !== 'robots') {
+      const route = env.routes[name];
+      if (route.processable) {
+        for (const [marker, value] of Object.entries(route.replaces ?? {})) {
+          this.routes[name] = this.routes[name].replaceAll(
+            `{{${marker}}}`,
+            value,
+          );
+        }
         this.routes[name] = this.routes[name]
           .replaceAll(/\n/g, ' ')
           .replaceAll(/\r/g, ' ')
+          .replace(/<!--[\s\S]*?-->/g, ' ')
+          .replaceAll(/\/\/\*[\s\S]*?\*\/\//g, ' ')
           .replaceAll(/\s+/g, ' ')
           .trim();
       }
 
       if (name === 'help') {
         this.routes[name] = this.routes[name]
-          .replaceAll('{alphabet}', env.alphabet.full)
-          .replaceAll('{digits}', env.alphabet.digits)
-          .replaceAll('{lowercase}', env.alphabet.lowercase)
-          .replaceAll('{capital}', env.alphabet.capital)
-          .replaceAll('{symbols}', env.alphabet.symbols)
-          .replaceAll('{unreadable}', env.alphabet.unreadable);
+          .replaceAll('{{alphabet}}', env.alphabet.full)
+          .replaceAll('{{digits}}', env.alphabet.digits)
+          .replaceAll('{{lowercase}}', env.alphabet.lowercase)
+          .replaceAll('{{capital}}', env.alphabet.capital)
+          .replaceAll('{{symbols}}', env.alphabet.symbols)
+          .replaceAll('{{unreadable}}', env.alphabet.unreadable);
       }
     }
   }
@@ -87,15 +98,15 @@ export class ResponseProcessor {
       if (request.responseType === 'head') {
         res.end();
       } else if (request.responseType === 'html') {
-        const option_html = '<option value="{value}">{value}</option>';
+        const option_html = '<option value="{{{value}}}">{{{value}}}</option>';
         const option_html_selected =
-          '<option value="{value}" selected>{value}</option>';
+          '<option value="{{value}}" selected>{{value}}</option>';
         let options = '';
         const size = request.options?.size ?? 21;
         for (let i = 3; i < 100; i++) {
           options += (
             i === size ? option_html_selected : option_html
-          ).replaceAll('{value}', i.toString());
+          ).replaceAll('{{value}}', i.toString());
         }
         const spanChain = nanoID
           .split('')
@@ -106,29 +117,32 @@ export class ResponseProcessor {
           .map((i, n) => `<span>${n + 1}</span>`)
           .join('');
         const index = this.routes.index
-          .replace('{spanChain}', spanChain)
-          .replace('{nanoID}', nanoID)
-          .replace('{markers}', markers)
-          .replace('{counter}', (this.counter.value + 1).toString())
+          .replace('{{spanChain}}', spanChain)
+          .replace('{{nanoID}}', nanoID)
+          .replace('{{markers}}', markers)
+          .replace('{{counter}}', (this.counter.value + 1).toString())
           .replace(
-            '{counterRequestInterval}',
+            '{{counterRequestInterval}}',
             env.counterRequestInterval.toString(),
           )
-          .replace('{nd_checked}', request.options?.noDigits ? 'checked' : '')
-          .replace('{ns_checked}', request.options?.noSymbols ? 'checked' : '')
+          .replace('{{nd_checked}}', request.options?.noDigits ? 'checked' : '')
           .replace(
-            '{nu_checked}',
+            '{{ns_checked}}',
+            request.options?.noSymbols ? 'checked' : '',
+          )
+          .replace(
+            '{{nu_checked}}',
             request.options?.noUnreadable ? 'checked' : '',
           )
-          .replace('{nl_checked}', request.options?.noLower ? 'checked' : '')
+          .replace('{{nl_checked}}', request.options?.noLower ? 'checked' : '')
           .replace(
-            '{nc_checked}',
+            '{{nc_checked}}',
             request.options?.noCapital && !request.options.noLower
               ? 'checked'
               : '',
           )
-          .replace('{sz_value}', size.toString())
-          .replace('sz_options', options);
+          .replace('{{sz_value}}', size.toString())
+          .replace('{{sz_options}}', options);
         res.end(index);
       } else {
         // text

@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="Description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests. Help section">
+    <title>{{title}}</title>
+    <meta name="Description" content="{{description}}">
     <meta name="keywords" content="help nanoid, help nano id, help nanoid generator, help nanoid online, help nanoid generator online, help nano id generator, help nano id online, help nano id generator online">
+
+    <!--
+        for facebook preview
+    -->
     <meta property="og:site_name" content="NANOID.DEV" />
-    <meta property="og:title" content="HELP: Nano ID generator">
-    <meta property="og:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests. Help section">
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:description" content="{{description}}">
     <meta property="og:image" content="https://nanoid.dev/p/nanoid.jpg" />
     <meta property="og:image:width" content="1200"/>
     <meta property="og:image:height" content="630"/>
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nanoid.dev/" />
+
+    <!--
+        for twitter preview
+    -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:description" content="Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests. Help section" />
+    <meta name="twitter:description" content="{{description}}" />
     <meta name="twitter:image" content="https://nanoid.dev/p/nanoid.jpg" />
-    <link rel="icon" type="image/svg+xml" href="p/nano.svg" />
-    <meta charset="UTF-8">
-    <title>HELP: Nano ID generator</title>
+
+    <!-- favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{icon}}" />
     <style>
         html {
             word-wrap: break-word;
@@ -118,16 +127,32 @@
 </head>
 <body>
     <header><h1>NANOID GENERATOR HELP</h1></header>
+
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebPage",
+            "name": "{{title}}",
+            "url": "https://nanoid.dev/help",
+            "description": "{{description}}",
+            "author": {
+                "@type": "Person",
+                "name": "@jjazzme"
+            },
+            "image": "http://nanoid.dev/p/nanoid.jpg"
+        }
+    </script>
+
     <main>
         <h2>HTML interface:</h2>
         <section>
             <ul>
-                <li>full alphabet: <b>{alphabet}</b></li>
-                <li>digits: <b>{digits}</b></li>
-                <li>lowercase: <b>{lowercase}</b></li>
-                <li>capital: <b>{capital}</b></li>
-                <li>symbols: <b>{symbols}</b></li>
-                <li>unreadable: <b>{unreadable}</b></li>
+                <li>full alphabet: <b>{{alphabet}}</b></li>
+                <li>digits: <b>{{digits}}</b></li>
+                <li>lowercase: <b>{{lowercase}}</b></li>
+                <li>capital: <b>{{capital}}</b></li>
+                <li>symbols: <b>{{symbols}}</b></li>
+                <li>unreadable: <b>{{unreadable}}</b></li>
             </ul>
         </section>
 

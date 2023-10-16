@@ -1,11 +1,11 @@
-import { TMethod, TOptions, TResponseType, TRoute } from './types.js';
+import { TMethod, TOptions, TResponseType, TRouteId } from './types.js';
 import { IncomingMessage } from 'http';
 import { env } from './env.js';
 
 // functional request class
 export class RequestProcessor {
   method: TMethod;
-  route: TRoute;
+  route: TRouteId;
   path: string;
   responseType: TResponseType;
   cookies?: Record<string, string>;
@@ -34,9 +34,9 @@ export class RequestProcessor {
 
     // set route
     this.route = 'no';
-    for (const [route, reg] of Object.entries(env.routes)) {
-      if (this.path.match(reg)) {
-        this.route = route as TRoute;
+    for (const [name, route] of Object.entries(env.routes)) {
+      if (route.reg && this.path.match(route.reg)) {
+        this.route = name as TRouteId;
         break;
       }
     }
@@ -56,12 +56,12 @@ export class RequestProcessor {
       }`;
       const source = this.path.match(env.rootPathWithOptions)
         ? this.path
-        : cookiePath.match(env.routes.index)
+        : cookiePath.match(env.routes.index.reg!)
         ? cookiePath
         : env.defaultOptionsSource;
 
       let size = 21;
-      const _size = (env.routes.index.exec(source) ?? [])[1];
+      const _size = (env.routes.index.reg!.exec(source) ?? [])[1];
       if (_size) {
         size = parseInt(_size.replace('S', ''));
         if (isNaN(size) || size == null) size = 21;

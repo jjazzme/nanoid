@@ -6,12 +6,38 @@ const capital = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const unreadable = '058goqsuvBDIOQS';
 const symbols = '_-';
 
-const routes: Omit<TRoutes, 'no'> = {
-  counter: /^\/c/g,
-  help: /^\/h/g,
-  sitemap: /^\/sitemap.xml/g,
-  robots: /^\/robots.txt/g,
-  index: /^\/(?:n[dsulc]*)?(S\d\d?)?[?#]?(?:[?#].+)?$/g, // !! index is last node
+const routes: TRoutes = {
+  no: {},
+  counter: {
+    reg: /^\/c/g,
+  },
+  help: {
+    reg: /^\/h/g,
+    processable: true,
+    replaces: {
+      title: 'HELP: Nano ID generator',
+      description:
+        'Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests. Help section',
+      icon: 'p/nano.svg',
+    },
+  },
+  sitemap: {
+    reg: /^\/sitemap.xml/g,
+  },
+  robots: {
+    reg: /^\/robots.txt/g,
+  },
+  index: {
+    // !! index is last node
+    reg: /^\/(?:n[dsulc]*)?(S\d\d?)?[?#]?(?:[?#].+)?$/g,
+    processable: true,
+    replaces: {
+      title: 'NANOID: Nano ID generator',
+      description:
+        'Generation of Nano ID online. Setting generation parameters. UI and TEXT/HEAD mode for automatic requests',
+      icon: 'p/nano.svg',
+    },
+  },
 };
 
 export const env = {
